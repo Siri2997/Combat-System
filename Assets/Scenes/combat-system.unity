@@ -840,9 +840,11 @@ MonoBehaviour:
   moveInput: {x: 0, y: 0}
   lookInput: {x: 0, y: 0}
   aim_point: 0
-  characterController: {fileID: 0}
-  moveSpeed: 1.5
+  characterController: {fileID: 1174091481}
   movementDirection: {x: 0, y: 0, z: 0}
+  isRunning: 0
+  walkSpeed: 1.5
+  runSpeed: 3.22
   aimLayerMask:
     serializedVersion: 2
     m_Bits: 192
