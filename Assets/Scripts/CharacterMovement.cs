@@ -31,12 +31,6 @@ public class CharacterMovement : MonoBehaviour
 
     [SerializeField] float verticalVelocity;
 
-   
-
-    private void OnEnable()
-    {
-        player_Actions.Enable();
-    }
 
     private void Start()
     {
@@ -61,8 +55,6 @@ public class CharacterMovement : MonoBehaviour
     private void AssignedInputEvents()
     {
         player_Actions = playerControl.player_Actions;
-
-        player_Actions.Player.Attack.performed += Context => Shoot();
 
         player_Actions.Player.Move.performed += Context => moveInput = Context.ReadValue<Vector2>();
         player_Actions.Player.Move.canceled += Context => moveInput = Vector2.zero;
@@ -93,13 +85,6 @@ public class CharacterMovement : MonoBehaviour
         bool playRunAnimation = isRunning && movementDirection.magnitude>0 ;   
         animator.SetBool("isRunning", playRunAnimation);
 
-    }
-
-
-    void Shoot()
-    {
-        Debug.Log("fire");
-        animator.SetTrigger("Fire");
     }
 
     private void AimTowardMouse()
@@ -140,10 +125,6 @@ public class CharacterMovement : MonoBehaviour
         }
     }
 
-    private void OnDisable()
-    {
-        player_Actions.Disable();
-    }
 //    void MoveToTarget()
 //    {
 //        if (target != null && health > 0)
