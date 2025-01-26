@@ -8,10 +8,8 @@ public class Bullet : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     [SerializeField] GameObject bulletImpactFx;
 
-    [SerializeField]   Rigidbody bulletRb => GetComponent<Rigidbody>();
-        float speed;
-        float damage;
-        Character target;
+    [SerializeField] Rigidbody bulletRb => GetComponent<Rigidbody>();
+
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -31,17 +29,5 @@ public class Bullet : MonoBehaviour
 
         }
     }
-
-    void MoveTowardsTarget()
-        {
-            if (target != null)
-            {
-            //Position = Vector3.MoveTowards(this.transform.position, target.tr, speed * Time.deltaTime);
-            //    if (Vector3.Distance(Position, target.Position) < threshold)
-            //    {
-            //        target.TakeDamage(damage);
-            //        Destroy(this); // Remove bullet from the scene
-            //    }
-            }
-        }
+   
 }

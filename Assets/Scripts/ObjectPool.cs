@@ -10,7 +10,7 @@ public class ObjectPool : MonoBehaviour
     [SerializeField] private GameObject bulletPrefab; // Prefab to pool
     [SerializeField] private int poolSize = 20; // Initial size of the pool
 
-    private Queue<GameObject> bulletPool = new Queue<GameObject>();
+    private Queue<GameObject> bulletPool;
 
     private void Awake()
     {
@@ -21,6 +21,7 @@ public class ObjectPool : MonoBehaviour
             Destroy(gameObject);
 
         bulletPool = new Queue<GameObject>();
+        CreateIntialPool();
    
     }
 
@@ -41,8 +42,6 @@ public class ObjectPool : MonoBehaviour
             newBullet.SetActive(false);
             bulletPool.Enqueue(newBullet);
         }
-
-
     }
 
     /// <summary>
@@ -63,5 +62,4 @@ public class ObjectPool : MonoBehaviour
         bulletPool.Enqueue(bullet);
     }
     
-    public void SaySomething() => Debug.Log(" Object pool is talking!");
 }
