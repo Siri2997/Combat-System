@@ -33,6 +33,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
+        GameManager.Instance.RegisterCharacter(transform);
         playerControl = GetComponent<PlayerControl>();
         characterController = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
@@ -84,10 +85,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void ApplyRotation()
     {
-       Vector3 lookingDirection = playerControl.aim.GetMousePosition() - transform.position;
+       Vector3 lookingDirection = playerControl.aim.GetMousePosition() - this.transform.position;
        lookingDirection.y = 0f;
        lookingDirection.Normalize();
-       transform.forward = lookingDirection;
+       this.transform.forward = lookingDirection;
     }
 
     private void ApplyMovement()

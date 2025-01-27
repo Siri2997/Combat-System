@@ -9,7 +9,7 @@ public class PlayerControl : MonoBehaviour
     private void Awake()
     {
         player_Actions = new InputSystem_Actions();
-        aim = GetComponent<PlayerAim>();
+        aim = this.GetComponent<PlayerAim>();
     }
 
     void Start()

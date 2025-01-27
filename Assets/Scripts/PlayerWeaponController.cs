@@ -22,19 +22,14 @@ public class PlayerWeaponController : MonoBehaviour
     private float currentHealth;
     private float health;
     private Animator animator;
-    //TMP_Text health_update_text;
-
-    //bool isHit;
-    //bool isDead;
+    
 
     private void Start()
     {
+        GameManager.Instance.RegisterCharacter(transform);
         playerControl = GetComponent<PlayerControl>();
         animator = GetComponentInChildren<Animator>();
-
-
         playerControl.player_Actions.Player.Attack.performed += Context => Shoot();
-
         //Health Variables
         currentHealth = maxHealth;
         health_Bar.UpdateHealthBar(maxHealth, currentHealth);
@@ -81,8 +76,6 @@ public class PlayerWeaponController : MonoBehaviour
         {
             animator.SetTrigger("Fire");
         }
-
-
     }
 
     public void TakeDamage(float damage)
@@ -110,12 +103,12 @@ public class PlayerWeaponController : MonoBehaviour
         if (animator != null)
         {
             animator.SetBool("isDead", true);
-            health_Bar.health_update_text.text = "Player Dead";
+            health_Bar.health_update_text.text = "Player Deceased";
 
         }
 
-        //Instantiate(deathEffect, transform.position, Quaternion.identity);
-        gameObject.SetActive(false); // Deactivate the player
+        GameManager.Instance.DeregisterCharacter(transform);
+        gameObject.SetActive(false);
     }
 
 }
