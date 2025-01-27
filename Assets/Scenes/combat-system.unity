@@ -358,6 +358,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _healthBarSprite: {fileID: 364077624}
+  health_update_text: {fileID: 0}
 --- !u!1 &368341963
 GameObject:
   m_ObjectHideFlags: 0
@@ -1520,8 +1521,6 @@ MonoBehaviour:
   damageRate: 0
   gunPoint: {fileID: 1830347815}
   health_Bar: {fileID: 364077626}
-  deathEffect: {fileID: 0}
-  hitEffect: {fileID: 0}
   maxHealth: 3
 --- !u!114 &1174091483
 MonoBehaviour:

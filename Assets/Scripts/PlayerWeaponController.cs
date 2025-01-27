@@ -1,6 +1,7 @@
 using UnityEditor.Rendering.LookDev;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 
 public class PlayerWeaponController : MonoBehaviour
@@ -17,11 +18,11 @@ public class PlayerWeaponController : MonoBehaviour
 
     [Header("Health")]
     [SerializeField] private Health_Bar health_Bar;
-    [SerializeField] private GameObject deathEffect, hitEffect;
     [SerializeField] private float maxHealth = 3f;
     private float currentHealth;
     private float health;
     private Animator animator;
+    //TMP_Text health_update_text;
 
     //bool isHit;
     //bool isDead;
@@ -52,8 +53,6 @@ public class PlayerWeaponController : MonoBehaviour
         {
             TakeDamage(Random.Range(0.5f, 1.5f)); // Apply random damage
             Debug.Log("Player hit by bullet.");
-            //isHit = true;
-            Invoke("PlayerHealthCheck", 1f);
         }
     }
 
@@ -101,6 +100,7 @@ public class PlayerWeaponController : MonoBehaviour
             if (animator != null)
             {
                 animator.SetBool("isHit", true);
+                health_Bar.health_update_text.text = "Player Attacked : " + currentHealth;
             }
         }
     }
@@ -110,9 +110,11 @@ public class PlayerWeaponController : MonoBehaviour
         if (animator != null)
         {
             animator.SetBool("isDead", true);
+            health_Bar.health_update_text.text = "Player Dead";
+
         }
 
-        Instantiate(deathEffect, transform.position, Quaternion.identity);
+        //Instantiate(deathEffect, transform.position, Quaternion.identity);
         gameObject.SetActive(false); // Deactivate the player
     }
 
