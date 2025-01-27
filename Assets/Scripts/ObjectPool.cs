@@ -50,10 +50,20 @@ public class ObjectPool : MonoBehaviour
     /// <returns>A GameObject ready to use.</returns>
     public GameObject GetBullet()
     {
-        GameObject bulletToGet = bulletPool.Dequeue();
-        bulletToGet.SetActive(true); // Reactivate the object
-        return bulletToGet;   
-       
+        if (bulletPool.Count > 0)
+        {
+            GameObject bulletToGet = bulletPool.Dequeue();
+            bulletToGet.SetActive(true); // Reactivate the object
+            return bulletToGet;
+        }
+        else
+        {
+            // Create a new bullet if the pool is empty (optional)
+            Debug.LogWarning("Bullet pool is empty. Instantiating a new bullet.");
+            GameObject newBullet = Instantiate(bulletPrefab);
+            return newBullet;
+        }
+
     }
 
     public void ReturnBullet(GameObject bullet)

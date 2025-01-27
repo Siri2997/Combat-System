@@ -11,26 +11,32 @@ public class PlayerWeaponController : MonoBehaviour
 
     [SerializeField] GameObject bulletPrefab;
     [SerializeField] float bulletSpeed = 50f;
-    [SerializeField] float REFERENCE_BULLET_SPEED = 50f;
+    //[SerializeField] float REFERENCE_BULLET_SPEED = 50f;
     [SerializeField] float damageRate;
     [SerializeField] Transform gunPoint;
 
     [Header("Health")]
     [SerializeField] private Health_Bar health_Bar;
     [SerializeField] private GameObject deathEffect, hitEffect;
-    [SerializeField] private float maxHealth =3f;
+    [SerializeField] private float maxHealth = 3f;
     private float currentHealth;
     private float health;
+    private Animator animator;
+
+    //bool isHit;
+    //bool isDead;
 
     private void Start()
     {
         playerControl = GetComponent<PlayerControl>();
+        animator = GetComponentInChildren<Animator>();
+
 
         playerControl.player_Actions.Player.Attack.performed += Context => Shoot();
 
         //Health Variables
         currentHealth = maxHealth;
-        health_Bar.UpdateHealthBar(maxHealth, currentHealth);   
+        health_Bar.UpdateHealthBar(maxHealth, currentHealth);
 
     }
 
@@ -44,6 +50,9 @@ public class PlayerWeaponController : MonoBehaviour
 
         if (collision.transform.CompareTag("Bullet"))
         {
+            TakeDamage(Random.Range(0.5f, 1.5f)); // Apply random damage
+            Debug.Log("Player hit by bullet.");
+            //isHit = true;
             Invoke("PlayerHealthCheck", 1f);
         }
     }
@@ -60,19 +69,15 @@ public class PlayerWeaponController : MonoBehaviour
 
         //// Fallback to instantiation if the pool is empty
         //newBullet = Instantiate(bulletPrefab, gunPoint.position, Quaternion.LookRotation(gunPoint.forward));
-        
 
-        // Set bullet velocity
+
+        // Apply force to the bullet
         Rigidbody rb_newBullet = newBullet.GetComponent<Rigidbody>();
         if (rb_newBullet != null)
         {
-            rb_newBullet.mass = REFERENCE_BULLET_SPEED / bulletSpeed;
+            rb_newBullet.AddForce(gunPoint.forward * bulletSpeed, ForceMode.VelocityChange);
         }
-
-
-
         // Trigger the firing animation
-        Animator animator = GetComponentInChildren<Animator>();
         if (animator != null)
         {
             animator.SetTrigger("Fire");
@@ -81,20 +86,34 @@ public class PlayerWeaponController : MonoBehaviour
 
     }
 
-    private void PlayerHealthCheck()
+    public void TakeDamage(float damage)
     {
-        currentHealth -= Random.Range(0.5f, 1.5f);
+        currentHealth -= damage;
+        health_Bar.UpdateHealthBar(maxHealth, currentHealth);
 
         if (currentHealth <= 0)
         {
-            //mention death Effect
+            Die();
         }
-
         else
         {
-            //Mention Hit Effect
-            Debug.Log("Shoot Called");
-            health_Bar.UpdateHealthBar(maxHealth, currentHealth);
+            // Trigger hit animation
+            if (animator != null)
+            {
+                animator.SetBool("isHit", true);
+            }
         }
     }
+
+    private void Die()
+    {
+        if (animator != null)
+        {
+            animator.SetBool("isDead", true);
+        }
+
+        Instantiate(deathEffect, transform.position, Quaternion.identity);
+        gameObject.SetActive(false); // Deactivate the player
+    }
+
 }

@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.TextCore.Text;
 using UnityEngine.UIElements;
 
+
 public class Bullet : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -13,8 +14,17 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        CreateImapactFx(collision);
+        if (collision.transform.CompareTag("Player") || collision.transform.CompareTag("Enemy"))
+        {
+            // Handle damage application on the target
+            var healthComponent = collision.transform.GetComponent<PlayerWeaponController>();
+            if (healthComponent != null)
+            {
+                healthComponent.TakeDamage(UnityEngine.Random.Range(1f, 5f));
+            }
+        }
 
+        CreateImapactFx(collision);
         ObjectPool.Instance.ReturnBullet(gameObject);
     }
 
