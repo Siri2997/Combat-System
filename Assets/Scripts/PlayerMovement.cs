@@ -1,47 +1,41 @@
 using UnityEngine;
-using UnityEngine.TextCore.Text;
-using UnityEngine.UIElements;
 using UnityEngine.InputSystem;
-using UnityEditor.Rendering.LookDev;
-using System;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private PlayerControl playerControl; 
+    private PlayerControl playerControl;
     private InputSystem_Actions player_Actions;
+    private PlayerInput playerInput;
     public Vector2 moveInput;
-    
-    public float aim_point;
-
-    [SerializeField] CharacterController characterController;
-    private Animator animator;
 
     [Header("Movement Info")]
-    [SerializeField] Vector3 movementDirection;
+    [SerializeField] private float walkSpeed = 5f;
+    [SerializeField] private float runSpeed = 8f;
+    private float currentSpeed;
+    [SerializeField] private Vector3 movementDirection;
+    [SerializeField] private bool isRunning;
 
-    [SerializeField]private bool isRunning;
+    [Header("References")]
+    [SerializeField] private CharacterController characterController;
+    private Animator animator;
 
-    [SerializeField]private float walkSpeed;
-    [SerializeField]private float runSpeed;
-
-    private float speed;
-
-   
-
-    [SerializeField] float verticalVelocity;
-
+    [SerializeField] private float verticalVelocity;
 
     private void Start()
     {
+        // Register the player with the GameManager
         GameManager.Instance.RegisterCharacter(transform);
+
+        // Initialize components
         playerControl = GetComponent<PlayerControl>();
+        playerInput = GetComponent<PlayerInput>();
         characterController = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
-        speed = walkSpeed;
+        currentSpeed = walkSpeed;
 
         AssignedInputEvents();
-
     }
+
     private void Update()
     {
         ApplyMovement();
@@ -49,24 +43,24 @@ public class PlayerMovement : MonoBehaviour
         AnimatorControllers();
     }
 
-
-
     private void AssignedInputEvents()
     {
-        player_Actions = playerControl.player_Actions;
+        // Access the player's unique input actions
+        player_Actions = playerControl.playerControls;
 
-        player_Actions.Player.Move.performed += Context => moveInput = Context.ReadValue<Vector2>();
-        player_Actions.Player.Move.canceled += Context => moveInput = Vector2.zero;
+        // Handle movement input
+        player_Actions.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
+        player_Actions.Player.Move.canceled += ctx => moveInput = Vector2.zero;
 
-        player_Actions.Player.Run.performed += Context =>
+        // Handle running input
+        player_Actions.Player.Run.performed += _ =>
         {
-            speed = runSpeed;
+            currentSpeed = runSpeed;
             isRunning = true;
         };
-
-        player_Actions.Player.Run.canceled += Context =>
+        player_Actions.Player.Run.canceled += _ =>
         {
-            speed = walkSpeed;
+            currentSpeed = walkSpeed;
             isRunning = false;
         };
     }
@@ -76,43 +70,44 @@ public class PlayerMovement : MonoBehaviour
         float xVelocity = Vector3.Dot(movementDirection.normalized, transform.right);
         float zVelocity = Vector3.Dot(movementDirection.normalized, transform.forward);
 
-        animator.SetFloat("xVelocity", xVelocity, .1f, Time.deltaTime);
-        animator.SetFloat("zVelocity", zVelocity, .1f, Time.deltaTime);
-        bool playRunAnimation = isRunning && movementDirection.magnitude>0 ;   
-        animator.SetBool("isRunning", playRunAnimation);
+        animator.SetFloat("xVelocity", xVelocity, 0.1f, Time.deltaTime);
+        animator.SetFloat("zVelocity", zVelocity, 0.1f, Time.deltaTime);
 
+        bool playRunAnimation = isRunning && movementDirection.magnitude > 0;
+        animator.SetBool("isRunning", playRunAnimation);
     }
 
     private void ApplyRotation()
     {
-       Vector3 lookingDirection = playerControl.aim.GetMousePosition() - this.transform.position;
-       lookingDirection.y = 0f;
-       lookingDirection.Normalize();
-       this.transform.forward = lookingDirection;
+        if (moveInput.magnitude > 0)
+        {
+            // Rotate towards the movement direction
+            Vector3 targetDirection = new Vector3(moveInput.x, 0, moveInput.y);
+            transform.forward = targetDirection;
+        }
     }
 
     private void ApplyMovement()
     {
-        movementDirection = new Vector3(moveInput.x, 0, moveInput.y);
+        // Calculate movement direction based on input
+        movementDirection = new Vector3(moveInput.x, 0, moveInput.y).normalized;
 
+        // Apply movement with gravity
         ApplyGravity();
-        if (movementDirection.magnitude > 0)
-        {
-            characterController.Move(movementDirection * Time.deltaTime * speed);
-        }
+        characterController.Move(movementDirection * currentSpeed * Time.deltaTime);
     }
 
     private void ApplyGravity()
     {
         if (!characterController.isGrounded)
         {
-            verticalVelocity = verticalVelocity - 9.81f * Time.deltaTime;
-            movementDirection.y = verticalVelocity;
+            verticalVelocity -= 9.81f * Time.deltaTime;
         }
         else
         {
-            verticalVelocity = -0.5f;
+            verticalVelocity = -0.5f; // A small downward force to keep grounded
         }
-    }
 
+        movementDirection.y = verticalVelocity;
+    }
 }

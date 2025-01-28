@@ -33,10 +33,8 @@ public class Bullet : MonoBehaviour
         if (collision.contacts.Length > 0)
         {
             ContactPoint contact = collision.contacts[0];
-
             GameObject newImpactFx = Instantiate(bulletImpactFx, contact.point, Quaternion.LookRotation(contact.normal));
             Destroy(newImpactFx);
-
         }
     }
    

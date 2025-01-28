@@ -1,28 +1,27 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerControl : MonoBehaviour
 {
-
-    public InputSystem_Actions player_Actions;
-    public PlayerAim aim { get; private set; } // Read Only
+    [SerializeField] public InputSystem_Actions playerControls { get; private set; } // Per-player input
+    //public PlayerInput playerInput;
 
     private void Awake()
     {
-        player_Actions = new InputSystem_Actions();
-        aim = this.GetComponent<PlayerAim>();
-    }
+        //playerInput = GetComponent<PlayerInput>(); // Get the PlayerInput component
+        playerControls = new InputSystem_Actions();
 
-    void Start()
-    {
+        // Enable only this player's input
+        //playerInput.actions.Enable();
     }
 
     private void OnEnable()
     {
-        player_Actions.Enable();
+        playerControls.Enable();
     }
 
     private void OnDisable()
     {
-        player_Actions.Disable();
+        playerControls.Disable();
     }
 }

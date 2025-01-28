@@ -30,7 +30,7 @@ public class PlayerAim : MonoBehaviour
 
     private void AssignInputEvents()
     {
-        player_Actions = playerControl.player_Actions;
+        player_Actions = playerControl.playerControls;
 
         player_Actions.Player.Look.performed += Context => lookInput = Context.ReadValue<Vector2>();
         player_Actions.Player.Look.canceled += Context => lookInput = Vector2.zero;

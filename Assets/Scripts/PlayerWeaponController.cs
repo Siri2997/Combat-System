@@ -7,108 +7,124 @@ using TMPro;
 public class PlayerWeaponController : MonoBehaviour
 {
     PlayerControl playerControl;
-
     [Header("Weapon Settings")]
+    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private Transform gunPoint;
+    [SerializeField] private float bulletSpeed = 20f;
+    [SerializeField] private float attackRange = 15f;
+    [SerializeField] private float attackSpeed = 1f;
 
-    [SerializeField] GameObject bulletPrefab;
-    [SerializeField] float bulletSpeed = 50f;
-    //[SerializeField] float REFERENCE_BULLET_SPEED = 50f;
-    [SerializeField] float damageRate;
-    [SerializeField] Transform gunPoint;
-
-    [Header("Health")]
-    [SerializeField] private Health_Bar health_Bar;
-    [SerializeField] private float maxHealth = 3f;
+    [Header("Health settings")]
+    [SerializeField] private Health_Bar healthBar;
+    [SerializeField] private float maxHealth = 100f;
     private float currentHealth;
-    private float health;
+
+    private Transform currentTarget;
+    private float nextAttackTime;
+    private bool isAlive = true;
+
     private Animator animator;
-    
+
+    public bool IsAlive => isAlive;
+
 
     private void Start()
     {
-        GameManager.Instance.RegisterCharacter(transform);
         playerControl = GetComponent<PlayerControl>();
-        animator = GetComponentInChildren<Animator>();
-        playerControl.player_Actions.Player.Attack.performed += Context => Shoot();
-        //Health Variables
         currentHealth = maxHealth;
-        health_Bar.UpdateHealthBar(maxHealth, currentHealth);
+        healthBar.UpdateHealthBar(maxHealth, currentHealth);
+        playerControl.playerControls.Player.Attack.performed += Context => Shoot();
+        GameManager.Instance.RegisterCharacter(this.gameObject.transform);
+        animator = GetComponentInChildren<Animator>();
 
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void Update()
     {
-        if (collision.transform.CompareTag("Enemy"))
+        if (!isAlive) return;
+
+        if (currentTarget == null || !currentTarget.GetComponent<PlayerWeaponController>().IsAlive)
         {
-            //collision.gameObject.GetComponent<>
-            Debug.Log("Damage Rate: " + damageRate);
+            SelectRandomTarget();
         }
 
-        if (collision.transform.CompareTag("Bullet"))
+        if (currentTarget != null)
         {
-            TakeDamage(Random.Range(0.5f, 1.5f)); // Apply random damage
-            Debug.Log("Player hit by bullet.");
+            AimAtTarget();
+
+            if (Time.time >= nextAttackTime)
+            {
+                //Shoot();
+                nextAttackTime = Time.time + attackSpeed;
+            }
         }
     }
+
 
     void Shoot()
     {
-
-        // Get a bullet from the pool
-        GameObject newBullet = ObjectPool.Instance.GetBullet();
-
-        // Set bullet position and rotation
-        newBullet.transform.position = gunPoint.position;
-        newBullet.transform.rotation = Quaternion.LookRotation(gunPoint.forward);
-
-        //// Fallback to instantiation if the pool is empty
-        //newBullet = Instantiate(bulletPrefab, gunPoint.position, Quaternion.LookRotation(gunPoint.forward));
-
-
-        // Apply force to the bullet
-        Rigidbody rb_newBullet = newBullet.GetComponent<Rigidbody>();
-        if (rb_newBullet != null)
+        if (Vector3.Distance(transform.position, currentTarget.position) <= attackRange)
         {
-            rb_newBullet.AddForce(gunPoint.forward * bulletSpeed, ForceMode.VelocityChange);
+            // Get a bullet from the pool
+            GameObject bullet = ObjectPool.Instance.GetBullet();
+            bullet.transform.position = gunPoint.position;
+
+            // Calculate direction to target
+            Vector3 direction = (currentTarget.position - gunPoint.position).normalized;
+
+            // Adjust the bullet's rotation to face the target
+            bullet.transform.rotation = Quaternion.LookRotation(direction);
+
+            // Apply force to the bullet
+            Rigidbody rb = bullet.GetComponent<Rigidbody>();
+            rb.useGravity = false; // Disable gravity if not needed
+            rb.AddForce(direction * bulletSpeed, ForceMode.VelocityChange);
+
+            //Debug.Log($"Bullet Force Applied. Direction: {direction}, Speed: {bulletSpeed}");
+            
+
+            // Trigger the firing animation
+            if (animator != null)
+            {
+                animator.SetTrigger("Fire");
+            }
         }
-        // Trigger the firing animation
-        if (animator != null)
+
+    }
+
+
+    private void AimAtTarget()
+    {
+        Vector3 direction = (currentTarget.position - transform.position).normalized;
+        transform.forward = new Vector3(direction.x, 0, direction.z);
+    }
+
+    private void SelectRandomTarget()
+    {
+        var aliveCharacters = GameManager.Instance.GetAliveCharacters();
+        if (aliveCharacters.Count > 1)
         {
-            animator.SetTrigger("Fire");
+            aliveCharacters.Remove(this.gameObject.transform); // Prevent targeting itself
+            currentTarget = aliveCharacters[Random.Range(0, aliveCharacters.Count)].transform;
         }
     }
 
     public void TakeDamage(float damage)
     {
         currentHealth -= damage;
-        health_Bar.UpdateHealthBar(maxHealth, currentHealth);
+        healthBar.UpdateHealthBar(maxHealth, currentHealth);
 
         if (currentHealth <= 0)
         {
             Die();
         }
-        else
-        {
-            // Trigger hit animation
-            if (animator != null)
-            {
-                animator.SetBool("isHit", true);
-                health_Bar.health_update_text.text = "Player Attacked : " + currentHealth;
-            }
-        }
     }
 
     private void Die()
     {
-        if (animator != null)
-        {
-            animator.SetBool("isDead", true);
-            health_Bar.health_update_text.text = "Player Deceased";
-
-        }
-
-        GameManager.Instance.DeregisterCharacter(transform);
-        gameObject.SetActive(false);
+        isAlive = false;
+        GameManager.Instance.DeregisterCharacter(this.gameObject.transform);
+        gameObject.SetActive(false); // Disable the character
     }
 
 }

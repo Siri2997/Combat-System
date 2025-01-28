@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 3038842035198092437}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 5.4764737e-18, y: 0.00022662627, z: 0.022435129}
+  m_LocalPosition: {x: -0.0001, y: 0.00022662627, z: 0.0238}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -138,11 +138,11 @@ BoxCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.018371841, y: 0.021966297, z: 0.054708492}
-  m_Center: {x: 0.00035096507, y: 0.002898569, z: 0.002354239}
+  m_Size: {x: 0.018371841, y: 0.019584365, z: 0.059586305}
+  m_Center: {x: 0.00035096495, y: 0.0017076035, z: -0.00008466551}
 --- !u!54 &6643432280716832210
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -152,8 +152,8 @@ Rigidbody:
   m_GameObject: {fileID: 7436684295806261291}
   serializedVersion: 4
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_Drag: 0.06
+  m_AngularDrag: 0.03
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -182,7 +182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f227c46b51c5694fb21a805667bd20d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletImpactFx: {fileID: 7436684295806261291}
+  bulletImpactFx: {fileID: 3863919012193302659, guid: cd929fe940f72ed4aaabfc10569c210e, type: 3}
 --- !u!1 &7653696840506995308
 GameObject:
   m_ObjectHideFlags: 0
@@ -210,7 +210,7 @@ Transform:
   m_GameObject: {fileID: 7653696840506995308}
   serializedVersion: 2
   m_LocalRotation: {x: -0.00000003774895, y: 0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.6508012e-18, y: 0.00018530535, z: 0.0023348927}
+  m_LocalPosition: {x: -0.00010000178, y: 0.00018530535, z: 0.0036997586}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
