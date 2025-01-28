@@ -3,25 +3,20 @@ using UnityEngine.InputSystem;
 
 public class PlayerControl : MonoBehaviour
 {
-    [SerializeField] public InputSystem_Actions playerControls { get; private set; } // Per-player input
-    //public PlayerInput playerInput;
+    public InputSystem_Actions playerControls;
 
     private void Awake()
     {
-        //playerInput = GetComponent<PlayerInput>(); // Get the PlayerInput component
-        playerControls = new InputSystem_Actions();
-
-        // Enable only this player's input
-        //playerInput.actions.Enable();
+        playerControls = new InputSystem_Actions(); // Assuming you're using this asset
     }
 
     private void OnEnable()
     {
-        playerControls.Enable();
+        playerControls.Enable(); // Enable the input actions
     }
 
     private void OnDisable()
     {
-        playerControls.Disable();
+        playerControls.Disable(); // Disable the input actions
     }
 }

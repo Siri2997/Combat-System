@@ -26,6 +26,9 @@ public class PlayerMovement : MonoBehaviour
         // Register the player with the GameManager
         GameManager.Instance.RegisterCharacter(transform);
 
+        // Set up player components (e.g., camera follow, health)
+        CameraManager.Instance.FocusOnPlayer(transform);
+
         // Initialize components
         playerControl = GetComponent<PlayerControl>();
         playerInput = GetComponent<PlayerInput>();

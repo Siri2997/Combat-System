@@ -82,11 +82,12 @@ public class EnemyController : MonoBehaviour
 
     private void SelectRandomTarget()
     {
-        var aliveCharacters = GameManager.Instance.GetAliveCharacters();
-        if (aliveCharacters.Count > 1)
+        // Get a random target using GameManager
+        Transform randomTarget = GameManager.Instance.GetRandomTarget();
+        if (randomTarget != null)
         {
-            aliveCharacters.Remove(this.gameObject.transform); // Prevent targeting itself
-            currentTarget = aliveCharacters[Random.Range(0, aliveCharacters.Count)].transform;
+            GameManager.Instance.SetTarget(transform, randomTarget);
+            currentTarget = randomTarget;
         }
     }
 
